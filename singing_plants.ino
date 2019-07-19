@@ -22,7 +22,7 @@ void setup()
 
 void loop()
 {
-  float sensorValue =  sens.capacitiveSensor(10);
+  float sensorValue =  sens.capacitiveSensor(valuesReadLimit);
   valuesRead = valuesRead + 1;
 
   //Serial.println((String)"Sensor Value: " + sensorValue);
