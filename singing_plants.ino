@@ -11,7 +11,7 @@ float differenceThreshold = 100.0;
 
 int valuesRead = 0;
 int valuesReadLimit = 5;
-int noiseThreshold = 50;
+int noiseThreshold = 150;
 
 void setup()
 {
@@ -52,20 +52,33 @@ void loop()
       /*
        * Threshold, used in the condition that triggers or not the sound, has 10% of the Delta value. 
        * So let's say that the maximum value read in the last 100 values is 7000 and the minumum is 100.
-       * The tone is only going to be played if the sensor value read is greater than 690. 
+       * The tone is only going to be played if the mean value of the last 5 sensor values is greater than 690. 
        * This leads to an adaptive threshold, what may improve the results if compared to a static one.
        */
        
       float sensorValueThreshold = delta * 0.10;
+      float sensorValuesMean = sensorValues.mean();
 
       //Serial.println( (String) "Sensor Value Threshold: " + sensorValueThreshold);
       
-      if (sensorValue > sensorValueThreshold && sensorValue > noiseThreshold) {
+      if (sensorValuesMean > sensorValueThreshold && sensorValuesMean > noiseThreshold) {
     
         //Serial.println("Play Tone");
         
         // audible frequency range: 20 Hz - 20 kHz or 20 to 20000
-        float audioFrequency = map(sensorValue, sensorValues.minimum(), sensorValues.maximum(), 20, 1000);
+
+        /*
+         * Division of frequencies amonng the five protoypes:
+         * 
+         * 1 - from 20 to 500
+         * 2 - from 501 to 1000
+         * 3 - from 1001 to 1500
+         * 4 - from 1500 to 2000
+         * 5 - from 2001 to 2500
+         * 
+         */
+        
+        float audioFrequency = map(sensorValue, sensorValues.minimum(), sensorValues.maximum(), 20, 500);
     
         tone(11, audioFrequency); // LSP on PIN 11 and GND
         
